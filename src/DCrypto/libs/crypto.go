@@ -1,4 +1,4 @@
-package RSAUtils
+package libs
 
 import (
 	"bytes"
@@ -55,15 +55,31 @@ func Decrypt(text string, sk *rsa.PrivateKey, autoMultiProcess bool) (string, er
 	if buf, err := base64.StdEncoding.DecodeString(text); err == nil {
 		bufIn := bytes.NewBuffer(buf)
 		if autoMultiProcess && bufIn.Len() > deParallelSize {
-			return decryptParallel(bufIn, sk)
+			if bs, err := decryptParallel(bufIn, sk); err != nil {
+				return "", err
+			} else {
+				return string(bs), nil
+			}
 		}
-		return decryptOneProcess(bufIn, sk)
+		if bs, err := decryptOneProcess(bufIn, sk); err != nil {
+			return "", err
+		} else {
+			return string(bs), nil
+		}
 	} else {
 		return "", err
 	}
 }
 
-func decryptOneProcess(bufIn *bytes.Buffer, sk *rsa.PrivateKey) (string, error) {
+func DecryptNoneBase64(cipher []byte, sk *rsa.PrivateKey, autoParallel bool) ([]byte, error) {
+	bufIn := bytes.NewBuffer(cipher)
+	if autoParallel && bufIn.Len() > deParallelSize {
+		return decryptParallel(bufIn, sk)
+	}
+	return decryptOneProcess(bufIn, sk)
+}
+
+func decryptOneProcess(bufIn *bytes.Buffer, sk *rsa.PrivateKey) ([]byte, error) {
 
 	//fmt.Println("decryptOneProcess")
 
@@ -73,10 +89,10 @@ func decryptOneProcess(bufIn *bytes.Buffer, sk *rsa.PrivateKey) (string, error) 
 	for {
 		if n, errReadBuf := bufIn.Read(buf); errReadBuf == nil && n > 0 {
 			if bs, errDecrypt := rsa.DecryptPKCS1v15(rand.Reader, sk, buf[0:n]); errDecrypt != nil {
-				return "", errDecrypt
+				return nil, errDecrypt
 			} else {
 				if _, errWriteBuf := bufOut.Write(bs); errWriteBuf != nil {
-					return "", errWriteBuf
+					return nil, errWriteBuf
 				}
 			}
 		} else {
@@ -84,10 +100,10 @@ func decryptOneProcess(bufIn *bytes.Buffer, sk *rsa.PrivateKey) (string, error) 
 		}
 	}
 
-	return string(bufOut.Bytes()), nil
+	return bufOut.Bytes(), nil
 }
 
-func decryptParallel(bufIn *bytes.Buffer, sk *rsa.PrivateKey) (string, error) {
+func decryptParallel(bufIn *bytes.Buffer, sk *rsa.PrivateKey) ([]byte, error) {
 
 	//fmt.Println("decryptParallel")
 
@@ -132,7 +148,7 @@ func decryptParallel(bufIn *bytes.Buffer, sk *rsa.PrivateKey) (string, error) {
 		case err := <-doneChan:
 			finishedCount++
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 		}
 
@@ -141,7 +157,7 @@ func decryptParallel(bufIn *bytes.Buffer, sk *rsa.PrivateKey) (string, error) {
 		}
 	}
 
-	return string(bytes.Join(outParts, nil)), nil
+	return bytes.Join(outParts, nil), nil
 }
 
 func Sign(text string, sk *rsa.PrivateKey) (string, error) {

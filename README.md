@@ -1,8 +1,7 @@
-# RSA crypto
+# RSA加解密工具
 
-RSACryptoUtil for different languages
-- python
-- go
+利用多机进行加速rsa数据解密过程
+
 
 
 

@@ -1,0 +1,13 @@
+
+center:
+  http_port : 4007
+  tcp_port: 4008
+  log: logs/center.yaml
+
+worker:
+  port : 4009
+  log: logs/worker.yaml
+  center: localhost:4008
+  report: 30
+
+
