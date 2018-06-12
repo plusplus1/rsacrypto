@@ -1,0 +1,9 @@
+# 日志存放的目录
+directory: /data/logs/dcrypto
+# 日志文件名称
+filename: worker
+# 日志级别
+level: DEBUG
+
+
+
