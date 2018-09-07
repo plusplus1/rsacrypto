@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/rsa"
 	"encoding/base64"
 	"errors"
 	"time"
@@ -21,6 +22,7 @@ func doDecrypt(c *gin.Context) {
 
 	var err error
 	var dataBytes []byte
+	var rsaSK *rsa.PrivateKey
 
 	req := ReqCryptOuter{}
 	if err = c.Bind(&req); err != nil {
@@ -32,7 +34,7 @@ func doDecrypt(c *gin.Context) {
 		return
 	}
 
-	if _, err = libs.LoadPemPKCSPriKey(req.PriKey); err != nil {
+	if rsaSK, err = libs.LoadPemPKCSPriKey(req.PriKey); err != nil {
 		c.String(400, "PriKey error "+err.Error())
 		return
 	}
@@ -42,8 +44,13 @@ func doDecrypt(c *gin.Context) {
 		return
 	}
 
+	var bitLen = rsaSK.N.BitLen()
 	var dataLen = len(dataBytes)
 	var step = 1024 * 128 // 128K 每个分片
+
+	if step%bitLen != 0 {
+		step = bitLen * (step / bitLen)
+	}
 
 	var totalCount = (dataLen + step - 1) / step
 	var wks = manager.Choose(totalCount)

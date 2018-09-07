@@ -10,8 +10,6 @@ import (
 )
 
 const (
-	enSize         = 100
-	deSize         = 1024 / 8
 	deParallelSize = 1024 * 20
 )
 
@@ -24,6 +22,14 @@ type (
 	signHashOpts struct{}
 )
 
+func calcDecryptSize(sk *rsa.PrivateKey) int {
+	return sk.N.BitLen() / 8
+}
+
+func calcEncryptSize(pk *rsa.PublicKey) int {
+	return pk.N.BitLen()/8 - 28
+}
+
 func (so signHashOpts) HashFunc() crypto.Hash {
 	return crypto.SHA1
 }
@@ -31,6 +37,8 @@ func (so signHashOpts) HashFunc() crypto.Hash {
 func Encrypt(text string, pk *rsa.PublicKey) (string, error) {
 	bufIn := bytes.NewBufferString(text)
 	bufOut := bytes.NewBuffer(nil)
+
+	var enSize = calcEncryptSize(pk)
 
 	buf := make([]byte, enSize)
 
@@ -83,6 +91,8 @@ func decryptOneProcess(bufIn *bytes.Buffer, sk *rsa.PrivateKey) ([]byte, error) 
 
 	//fmt.Println("decryptOneProcess")
 
+	var deSize = calcDecryptSize(sk)
+
 	var buf = make([]byte, deSize)
 	var bufOut = bytes.NewBuffer(nil)
 
@@ -108,6 +118,8 @@ func decryptParallel(bufIn *bytes.Buffer, sk *rsa.PrivateKey) ([]byte, error) {
 	//fmt.Println("decryptParallel")
 
 	inSize := bufIn.Len()
+
+	var deSize = calcDecryptSize(sk)
 
 	var totalCount = (inSize + deSize - 1) / deSize
 	var finishedCount = 0

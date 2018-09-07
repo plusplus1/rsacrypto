@@ -8,13 +8,12 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 import (
 	"github.com/plusplus1/logrus-extension"
 	"github.com/plusplus1/utils4g"
+	"github.com/sirupsen/logrus"
 )
 
 import (
