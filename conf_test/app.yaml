@@ -1,13 +1,11 @@
 
-center:
-  http_port : 4007
-  tcp_port: 4008
-  log: logs/center.yaml
+Center:
+  Port : 4007
+  Log  : logs/center.yaml
 
-worker:
-  port : 4009
-  log: logs/worker.yaml
-  center: localhost:4008
-  report: 30
+Worker:
+  Port            : 4009
+  Log             : logs/worker.yaml
+  ReportInterval  : 600
 
-
+Registry: "redis://registry"

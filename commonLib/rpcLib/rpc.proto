@@ -1,0 +1,42 @@
+syntax = "proto3";
+package rpcLib;
+
+// rsa 数据加解密服务
+service rsa_service {
+
+    // rsa加密
+    rpc do_encrypt(rsa_request) returns ( rsa_response ) {}
+
+    // rsa解密
+    rpc do_decrypt(rsa_request) returns ( rsa_response ) {}
+
+    // 心跳检测服务
+    rpc ping(hb_request) returns (hb_response) {}
+}
+
+
+message rsa_request {
+
+    int32   seq_no  = 1 ; // 数据段序列号
+    bytes   body    = 2 ; // 数据体
+    bytes   key     = 3 ; // 密钥
+
+}
+
+message rsa_response {
+
+    int32   seq_no  = 1 ; // 数据段序列号
+    int32   code    = 2 ; // 错误码
+    string  msg     = 3 ; // 错误原因
+    bytes   data    = 4 ; // 结果
+
+}
+
+
+message hb_request {
+
+}
+
+message hb_response {
+    string msg = 1;
+}

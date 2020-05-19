@@ -1,6 +1,9 @@
 # 日志存放的目录
-directory: ./logs
+directory: /data/logs/parallel_rsa
 # 日志文件名称
-filename: worker
+filename: 'worker.${hostname}'
 # 日志级别
 level: DEBUG
+
+
+

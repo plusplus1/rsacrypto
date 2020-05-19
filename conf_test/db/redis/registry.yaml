@@ -1,0 +1,21 @@
+# APP名称，对于这个连接上的操作，自动将所有的key加上前缀 appName:
+# Phone Region Service
+appName: "parallel:registry"
+
+# 具体的配置
+redisConfig:
+
+  # 连接机器
+  host: "r-2zeecbea02c47bf4666.redis.rds.aliyuncs.com"
+
+  # 连接端口
+  port: 6379
+
+  # 认证信息
+  password: "MfotcjLwV3Fpu31mdi2K0U9YnUUzb2"
+
+  # 默认连接的db
+  db: 11
+
+  # 最大连接数
+  maxConnections: 1000

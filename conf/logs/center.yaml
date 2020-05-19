@@ -1,7 +1,7 @@
 # 日志存放的目录
-directory: /data/logs/dcrypto
+directory: /data/logs/parallel_rsa
 # 日志文件名称
-filename: center
+filename: 'center.${hostname}'
 # 日志级别
 level: DEBUG
 

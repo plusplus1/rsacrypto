@@ -1,5 +1,6 @@
-build: clean
-	/bin/bash build.sh
+
+gen:
+	protoc --go_out=plugins=grpc:. commonLib/rpcLib/*.proto
 
 clean:
-	rm -rf bin output
+	@git clean -f -d -X
